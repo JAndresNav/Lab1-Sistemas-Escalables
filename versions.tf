@@ -15,6 +15,17 @@ terraform {
       version = "~> 2.0"
     }
   }
+
+  # Remote state stored in the shared S3 bucket, so the whole team reads/writes
+  # the same terraform.tfstate instead of everyone having their own local copy.
+  backend "s3" {
+    bucket       = "744998"
+    key          = "lab1/terraform.tfstate"
+    region       = "us-east-1"
+    profile      = "academy"
+    encrypt      = true
+    use_lockfile = true # native S3 locking (Terraform >= 1.10), no DynamoDB table needed
+  }
 }
 
 provider "aws" {
