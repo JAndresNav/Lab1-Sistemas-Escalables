@@ -12,3 +12,8 @@ output "ssh_command" {
   description = "Command to SSH into the instance"
   value       = "ssh -i ${var.instance_name}-key.pem ec2-user@${aws_instance.this.public_ip}"
 }
+
+output "web_url" {
+  description = "URL of the nginx default page"
+  value       = "http://${aws_instance.this.public_ip}"
+}

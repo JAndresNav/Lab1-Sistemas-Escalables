@@ -32,16 +32,24 @@ resource "local_file" "private_key" {
   file_permission = "0400"
 }
 
-# Security group: SSH open to the world (lab use only)
+# Security group: SSH + HTTP open to the world (lab use only)
 resource "aws_security_group" "this" {
   name        = "${var.instance_name}-sg"
-  description = "Allow SSH access"
+  description = "Allow SSH and HTTP access"
   vpc_id      = data.aws_vpc.default.id
 
   ingress {
     description = "SSH"
     from_port   = 22
     to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "HTTP"
+    from_port   = 80
+    to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -64,6 +72,9 @@ resource "aws_instance" "this" {
   subnet_id              = data.aws_subnets.default.ids[0]
   key_name               = aws_key_pair.this.key_name
   vpc_security_group_ids = [aws_security_group.this.id]
+
+  user_data                   = file("${path.module}/user_data.sh")
+  user_data_replace_on_change = true
 
   tags = {
     Name = var.instance_name
