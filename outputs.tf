@@ -13,7 +13,12 @@ output "ssh_command" {
   value       = "ssh -i ${var.instance_name}-key.pem ec2-user@${aws_instance.this.public_ip}"
 }
 
+output "public_dns" {
+  description = "Public DNS name of the EC2 instance"
+  value       = aws_instance.this.public_dns
+}
+
 output "web_url" {
-  description = "URL of the nginx default page"
-  value       = "http://${aws_instance.this.public_ip}"
+  description = "URL of the nginx default page (via public DNS)"
+  value       = "http://${aws_instance.this.public_dns}"
 }
